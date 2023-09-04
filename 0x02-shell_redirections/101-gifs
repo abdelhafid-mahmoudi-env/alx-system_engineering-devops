@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# Find all .gif files recursively and sort them by byte values (case-insensitive)
+find . -type f -iname '*.gif' | sort -f | sed 's/\(.*\)\..*/\1/'
