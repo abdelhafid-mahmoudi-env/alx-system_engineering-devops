@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# This script groups visitors by IP and HTTP status code and displays the data sorted by occurrences
+# This script groups and sorts Apache log data by IP and HTTP status code
 
-awk '{count[$1" "$9]++} END {for (combo in count) print count[combo], combo}' apache-access.log | sort -nr
+awk '{freq[$1" "$9]++} END {for (ip_status in freq) print freq[ip_status], ip_status}' apache-access.log | sort -k1,1nr -k2,2
