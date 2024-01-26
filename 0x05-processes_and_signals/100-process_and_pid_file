@@ -1,19 +1,21 @@
 #!/usr/bin/env bash
-# Does the following:
-#   - Creates the file /var/run/myscript.pid containing the script PID.
-#   - Displays "To infinity and beyond" indefinitely.
-#   - Displays "I hate the kill command" upon receiving a SIGTERM signal.
-#   - Displays "Y U no love me?!" upon receiving a SIGINT signal.
-#   - Deletes the file /var/run/myscript.pid and terminates upon
-#     receiving a SIGQUIT or SIGTERM signal.
+# This Bash script performs the following actions:
+#   1. Creates a file /var/run/myscript.pid containing the script's PID.
+#   2. Displays the message "To infinity and beyond" indefinitely.
+#   3. Displays the message "I hate the kill command" upon receiving a SIGTERM signal.
+#   4. Displays the message "Y U no love me?!" upon receiving a SIGINT signal.
+#   5. Deletes the file /var/run/myscript.pid and terminates upon receiving a SIGQUIT or SIGTERM signal.
 
+# Function to clean up and exit gracefully
 terminator() {
   rm /var/run/myscript.pid
   exit
 }
 
+# Create a file containing the script's PID
 echo "$$" > /var/run/myscript.pid
 
+# Main loop
 while true
 do
   echo "To infinity and beyond"
