@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# This script displays the PID and process name of processes containing 'bash'
+
+for pid in /proc/[0-9]*
+do
+    if [ -f "$pid/cmdline" ]; then
+        cmdline=$(tr -d '\0' < "$pid/cmdline")
+        if [[ $cmdline == *bash* ]]; then
+            echo "$(basename $pid) ${cmdline%% *}"
+        fi
+    fi
+done
