@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Script to change IP resolution for localhost and facebook.com
+
+# Backup the original /etc/hosts file
+sudo cp /etc/hosts /etc/hosts.backup
+
+# Add new entries for localhost and facebook.com
+echo -e "127.0.0.2\tlocalhost" | sudo tee -a /etc/hosts
+echo -e "8.8.8.8\tfacebook.com" | sudo tee -a /etc/hosts
