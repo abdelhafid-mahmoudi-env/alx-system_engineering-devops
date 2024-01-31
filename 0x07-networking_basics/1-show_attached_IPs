@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Script to display all active IPv4 IPs on the machine
+
+# Get the list of IP addresses
+ip -4 addr | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
