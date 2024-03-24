@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Ensure the stdlib module is included
 include stdlib
 
