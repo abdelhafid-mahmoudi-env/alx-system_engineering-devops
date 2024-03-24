@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Generate an RSA key pair with 4096 bits, protected by the passphrase "betty"
+# -t rsa specifies the type of key to create (RSA)
+# -b 4096 sets the number of bits in the key to 4096
+# -C "Generated key pair for school" adds a comment to identify the key pair
+# -f ~/.ssh/school specifies the filename of the private key to create
+# -N "betty" sets the passphrase for the private key
+ssh-keygen -t rsa -b 4096 -C "Generated key pair for school" -f ~/.ssh/school -N "betty"
