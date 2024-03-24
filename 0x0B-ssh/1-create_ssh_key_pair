@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Generate an RSA key pair with 4096 bits, protected by the passphrase "betty"
 # -t rsa specifies the type of key to create (RSA)
