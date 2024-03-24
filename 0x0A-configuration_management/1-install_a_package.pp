@@ -1,5 +1,4 @@
-#!/usr/bin/pup
-# Puppet manifest to install Flask package
+# Using Puppet, install flask from pip3.
 
 package { 'flask':
   ensure   => '2.1.0',
