@@ -1,6 +1,8 @@
-# Puppet manifest to install Flask package
+# Puppet manifest to kill a process named "killmenow"
 
-package { 'flask':
-  ensure   => '2.1.0',
-  provider => 'pip3',
+exec { 'killmenow':
+  command     => 'pkill -9 -f killmenow',
+  path        => ['/usr/bin', '/usr/sbin', '/bin'],
+  onlyif      => 'pgrep -f killmenow',
+  refreshonly => true,
 }
