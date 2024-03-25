@@ -1,24 +1,25 @@
 #!/usr/bin/env bash
-# This script installs Nginx web server and configures it to meet the requirements
+#
+# Description:
+#   This script installs Nginx web server on the web server and ensures that Nginx
+#   is listening on port 80. It also writes a "Hello World!" message to the default
+#   HTML file.
+#
+
+# Update package index
+sudo apt-get -y update
 
 # Install Nginx
-apt-get update
-apt-get install -y nginx
+sudo apt-get -y install nginx
 
-# Ensure Nginx is listening on port 80
-sed -i 's/^\(.*listen .*:\)80\(.*\)$/\180\2/' /etc/nginx/sites-available/default
+# Allow HTTP traffic through firewall
+sudo ufw allow "Nginx HTTP"
 
-# Restart Nginx without using systemctl
-nginx -s reload
+# Change ownership of default HTML file to current user
+sudo chown -R $USER:$USER /var/www/html/index.nginx-debian.html
 
-# Create a default index.html file
-echo "Hello World!" > /var/www/html/index.html
+# Write "Hello World!" to HTML file
+sudo echo "Hello World!" > /var/www/html/index.nginx-debian.html
 
-# Ensure Nginx returns "Hello World!" when queried at root
-nginx_response=$(curl -s http://localhost)
-if [[ "$nginx_response" != *"Hello World!"* ]]; then
-    echo "Error: Nginx is not returning the expected response."
-    exit 1
-fi
-
-echo "Nginx installed and configured successfully."
+# Restart Nginx service
+sudo service nginx restart
