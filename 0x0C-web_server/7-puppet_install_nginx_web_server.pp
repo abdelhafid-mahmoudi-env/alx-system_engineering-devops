@@ -1,67 +1,71 @@
-# Ensure the nginx package is installed
+# add stable version of nginx
+exec { 'add nginx stable repo':
+  command => 'sudo add-apt-repository ppa:nginx/stable -y',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# update software packages list
+exec { 'update packages':
+  command => 'apt-get update',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# install nginx
 package { 'nginx':
-  ensure => installed,
+  ensure => 'installed',
 }
 
-# Define the Nginx class
-class { 'nginx':
-  manage_repo => true,
-  listen_port => 80,
+# allow HTTP
+exec { 'allow HTTP':
+  command => "ufw allow 'Nginx HTTP'",
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+  onlyif  => '! dpkg -l nginx | egrep \'îi.*nginx\' > /dev/null 2>&1',
 }
 
-# Define a custom file resource for the default HTML file
-file { '/var/www/html/index.nginx-debian.html':
-  ensure  => present,
+# change folder rights
+exec { 'chmod www folder':
+  command => 'chmod -R 755 /var/www',
+  path    => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+}
+
+# create index file
+file { '/var/www/html/index.html':
   content => "Hello World!\n",
-  require => Class['nginx'],
 }
 
-# Define server configuration
-nginx::resource::vhost { 'default':
-  www_root          => '/var/www/html',
-  listen_port       => 80,
-  index_files       => ['index.html', 'index.htm', 'index.nginx-debian.html'],
-  error_log_file    => '/var/log/nginx/error.log',
-  access_log_file   => '/var/log/nginx/access.log',
-  location_cfg_append => {
-    '/' => {
-      try_files => '$uri $uri/ =404',
-    },
-    '/redirect_me' => {
-      rewrite => '^(.*)$ https://www.github.com/besthor permanent',
-    },
-    '/404.html' => {
-      internal => true,
-    },
-  },
-  error_pages       => {
-    '404' => '/404.html',
-  },
-}
-
-# Define custom 404 error page
+# create 404 page
 file { '/var/www/html/404.html':
-  ensure  => present,
   content => "Ceci n'est pas une page\n",
-  require => Class['nginx'],
+}
+
+# Add redirection and error page to the Nginx default config file
+file { 'Nginx default config file':
+  path    => '/etc/nginx/sites-enabled/default',
+  ensure  => file,
+  content => "server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+    server_name _;
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
+    location /redirect_me {
+        rewrite ^ https://www.github.com/besthor permanent;
+    }
+    error_page 404 /404.html;
+    location = /404.html {
+        root /var/www/html;
+        internal;
+    }
+}",
+  notify  => Service['nginx'],
 }
 
 # Ensure Nginx service is running
 service { 'nginx':
-  ensure  => running,
-  enable  => true,
-  require => [Class['nginx'], Package['nginx']],
-}
-
-# Add a line to the Nginx configuration file
-file_line { 'install':
-  ensure => 'present',
-  path   => '/etc/nginx/sites-enabled/default',
-  after  => 'listen 80 default_server;',
-  line   => 'rewrite ^/redirect_me https://www.github.com/besthor permanent;',
-}
-
-# Ensure the default HTML file is created
-file { '/var/www/html/index.html':
-  content => 'Hello World!',
+  ensure => 'running',
+  enable => 'true',
+  require => Package['nginx'],
 }
