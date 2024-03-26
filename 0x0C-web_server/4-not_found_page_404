@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#configure a custom 404 page
+# It begins by updating the package lists for APT.
+# Install Nginx with the -y flag for non-interactive installation.
+# Allow HTTP traffic through the firewall for Nginx.
+# Create a directory for the web files and set permissions.
+# Create a simple 'Hello World!' index file.
+# Write the server configuration to the default Nginx configuration file.
+# Restarting Nginx service
+sudo apt-get update
+sudo apt-get -y install nginx
+ufw allow 'Nginx HTTP'
+chmod -R 755 /var/www
+echo 'Hello World' > /var/www/html/index.html
+
+NEW_SERVER_CONFIG=\
+"server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+        location / {
+                try_files \$uri \$uri/ =404;
+        }
+        error_page 404 /404.html;
+        location  /404.html {
+            internal;
+        }
+        if (\$request_filename ~ redirect_me){
+            rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
+        }
+}
+"
+echo "Ceci n'est pas une page" > /var/www/html/404.html
+echo "$NEW_SERVER_CONFIG" > /etc/nginx/sites-available/default
+
+if [ "$(pgrep nginx)" -le 0 ];
+then
+    service nginx start
+else
+    service nginx restart
+fi;
