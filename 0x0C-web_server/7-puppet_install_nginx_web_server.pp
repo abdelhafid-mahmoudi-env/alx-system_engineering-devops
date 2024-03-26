@@ -52,7 +52,7 @@ file { 'Nginx default config file':
         try_files \$uri \$uri/ =404;
     }
     location /redirect_me {
-        rewrite ^ https://www.github.com/besthor permanent;
+        rewrite ^ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;
     }
     error_page 404 /404.html;
     location = /404.html {
