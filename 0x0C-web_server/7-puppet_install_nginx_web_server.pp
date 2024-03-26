@@ -1,93 +1,49 @@
-# Add stable version of Nginx repository
-exec { 'add nginx stable repo':
-  command => 'sudo add-apt-repository ppa:nginx/stable',
-  path    => ['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin'],
-  unless  => 'apt-cache policy | grep -q "nginx/stable"',
-  notify  => Exec['update packages'],
+# Define the Nginx class
+class { 'nginx':
+  manage_repo => true,
+  listen_port => 80,
 }
 
-# Update software packages list
-exec { 'update packages':
-  command => 'apt-get update',
-  path    => ['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin'],
-  refreshonly => true,
-}
-
-# Install Nginx package
-package { 'nginx':
-  ensure  => 'installed',
-  require => Exec['update packages'],
-}
-
-# Allow HTTP traffic through the firewall for Nginx
-exec { 'allow HTTP':
-  command => "ufw allow 'Nginx HTTP'",
-  path    => ['/usr/local/sbin', '/usr/local/bin', '/usr/sbin', '/usr/bin', '/sbin', '/bin'],
-  unless  => "ufw status | grep -q 'Nginx HTTP'",
-}
-
-# Set folder permissions for /var/www/html
-file { '/var/www/html':
-  ensure  => 'directory',
-  mode    => '0755',
-  owner   => 'root',
-  group   => 'root',
-}
-
-# Create index.html file
-file { '/var/www/html/index.html':
-  ensure  => 'file',
+# Define a custom file resource for the default HTML file
+file { '/var/www/html/index.nginx-debian.html':
+  ensure  => present,
   content => "Hello World!\n",
-  mode    => '0644',
-  owner   => 'root',
-  group   => 'root',
+  require => Class['nginx'],
 }
 
-# Create custom 404.html page
+# Define server configuration
+nginx::resource::vhost { 'default':
+  www_root          => '/var/www/html',
+  listen_port       => 80,
+  index_files       => ['index.html', 'index.htm', 'index.nginx-debian.html'],
+  error_log_file    => '/var/log/nginx/error.log',
+  access_log_file   => '/var/log/nginx/access.log',
+  location_cfg_append => {
+    '/' => {
+      try_files => '$uri $uri/ =404',
+    },
+    '/redirect_me' => {
+      rewrite => '^(.*)$ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent',
+    },
+    '/404.html' => {
+      internal => true,
+    },
+  },
+  error_pages       => {
+    '404' => '/404.html',
+  },
+}
+
+# Define custom 404 error page
 file { '/var/www/html/404.html':
-  ensure  => 'file',
+  ensure  => present,
   content => "Ceci n'est pas une page\n",
-  mode    => '0644',
-  owner   => 'root',
-  group   => 'root',
+  require => Class['nginx'],
 }
 
-# Configure Nginx default server block with redirection and custom error page
-file { '/etc/nginx/sites-enabled/default':
-  ensure  => 'file',
-  content => @("EOT"
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
-    root /var/www/html;
-    index index.html index.htm index.nginx-debian.html;
-    server_name _;
-
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
-
-    error_page 404 /404.html;
-    location = /404.html {
-        internal;
-    }
-
-    if (\$request_uri ~* "/redirect_me") {
-        return 301 https://www.youtube.com/watch?v=QH2-TGUlwu4;
-    }
-}
-EOT
-),
-  mode    => '0644',
-  owner   => 'root',
-  group   => 'root',
-  require => File['/var/www/html', '/var/www/html/index.html', '/var/www/html/404.html'],
-  notify  => Service['nginx'],
-}
-
-# Restart Nginx service after configuration changes
+# Ensure Nginx service is running
 service { 'nginx':
-  ensure    => 'running',
-  enable    => true,
-  subscribe => File['/etc/nginx/sites-enabled/default'],
+  ensure => running,
+  enable => true,
+  require => Class['nginx'],
 }
