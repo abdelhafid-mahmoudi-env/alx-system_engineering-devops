@@ -1,3 +1,14 @@
 #!/usr/bin/env bash
-# Initialize Apache web server to serve a page with "Hello Holberton"
-service apache2 start
+# Fix Apache to return a page containing "Hello Holberton"
+
+# Update package lists to ensure installation of latest packages
+apt-get update
+
+# Install Apache web server
+apt-get install -y apache2
+
+# Create HTML file with the required content
+echo "Hello Holberton" > /var/www/html/index.html
+
+# Restart Apache to apply changes
+service apache2 restart
