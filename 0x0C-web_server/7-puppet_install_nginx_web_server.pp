@@ -1,3 +1,8 @@
+# Ensure the nginx package is installed
+package { 'nginx':
+  ensure => installed,
+}
+
 # Define the Nginx class
 class { 'nginx':
   manage_repo => true,
@@ -23,7 +28,7 @@ nginx::resource::vhost { 'default':
       try_files => '$uri $uri/ =404',
     },
     '/redirect_me' => {
-      rewrite => '^(.*)$ https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent',
+      rewrite => '^(.*)$ https://www.github.com/besthor permanent',
     },
     '/404.html' => {
       internal => true,
@@ -43,7 +48,20 @@ file { '/var/www/html/404.html':
 
 # Ensure Nginx service is running
 service { 'nginx':
-  ensure => running,
-  enable => true,
-  require => Class['nginx'],
+  ensure  => running,
+  enable  => true,
+  require => [Class['nginx'], Package['nginx']],
+}
+
+# Add a line to the Nginx configuration file
+file_line { 'install':
+  ensure => 'present',
+  path   => '/etc/nginx/sites-enabled/default',
+  after  => 'listen 80 default_server;',
+  line   => 'rewrite ^/redirect_me https://www.github.com/besthor permanent;',
+}
+
+# Ensure the default HTML file is created
+file { '/var/www/html/index.html':
+  content => 'Hello World!',
 }
