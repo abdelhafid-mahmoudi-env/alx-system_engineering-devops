@@ -25,7 +25,7 @@ Below are the projects completed during the course:
 | [Attack Is The Best Defense](https://github.com/abdelhafid-mahmoudi-env/alx-system_engineering-devops/tree/master/attack_is_the_best_defense) | Exploring offensive security techniques. |
 
 ## Author
-* **[Abdelhafid Mahmoudi](https://github.com/ABDabdelhafid-mahmoudi-env)**
+* **[Abdelhafid Mahmoudi](https://github.com/abdelhafid-mahmoudi-env)**
 
 ## Acknowledgements
 All work contained in this project was completed as part of the curriculum for the ALX-SE program. ALX Africa is an online full-stack software engineering program that prepares students for careers in the tech industry using project-based peer learning. For more information, visit [ALX Africa](https://www.alxafrica.com/).
