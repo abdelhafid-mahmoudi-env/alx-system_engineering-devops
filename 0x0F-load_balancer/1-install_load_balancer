@@ -9,7 +9,7 @@ server_config=\
 frontend  abdel-frontend
         bind *:80
         mode http
-        default_backend yonas-backend
+        default_backend abdel-backend
 backend abdel-backend
         balance roundrobin
         server 520532-web-01 52.23.177.252:80 check
