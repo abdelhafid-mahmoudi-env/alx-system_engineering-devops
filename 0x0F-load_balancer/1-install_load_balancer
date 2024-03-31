@@ -13,6 +13,16 @@ sudo touch /etc/haproxy/haproxy.cfg
 # HAproxy configuration
 server_config=\
 "
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
+
 defaults
     log     global
     mode    http
