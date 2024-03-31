@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
-#
-# Description:
-#   Bash script to configure Nginx to return a custom header on HTTP requests.
-#   This script automates the installation of Nginx, sets up a custom header
-#   in its configuration, creates index.html and 404.html pages, and starts
-#   or restarts the Nginx service.
-#
-
-# Enable strict mode for better error handling
-set -euo pipefail
+# Bash script to configure Nginx to return a custom header on HTTP requests.
 
 # Update package repositories
 sudo apt-get -y update
@@ -34,9 +25,4 @@ echo "Hello World!" | sudo tee /var/www/html/index.html >/dev/null
 echo "Ceci n'est pas une page" | sudo tee /var/www/html/404.html >/dev/null
 
 # Start or restart Nginx service based on its status
-if [ "$(pgrep nginx)" -le 0 ];
-then
-    service nginx start
-else
-    service nginx restart
-fi;
+service nginx restart
