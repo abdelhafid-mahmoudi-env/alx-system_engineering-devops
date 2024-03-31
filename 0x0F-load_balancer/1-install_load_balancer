@@ -13,11 +13,11 @@ sudo touch /etc/haproxy/haproxy.cfg
 # HAproxy configuration
 server_config=\
 "
-frontend  abdel-frontend
+frontend load_balancer
         bind *:80
         mode http
-        default_backend abdel-backend
-backend abdel-backend
+        default_backend webservers
+backend webservers
         balance roundrobin
         server 520532-web-01 52.23.177.252:80 check
         server 520532-web-02 18.204.7.7:80 check
