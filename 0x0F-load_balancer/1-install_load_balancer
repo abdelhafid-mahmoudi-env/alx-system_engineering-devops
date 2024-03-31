@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
-#
-# Description:
-#   Bash script to install and configure HAproxy as a load balancer.
-#   This script configures HAproxy to forward traffic to web-01 and web-02
-#   using a round-robin algorithm and ensures HAproxy can be managed via an init script.
+# Bash script to install and configure HAproxy as a load balancer..
 
 # Install HAproxy
 sudo apt-get -y update
