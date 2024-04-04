@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# This script displays information about subdomains
+
+# Function to display DNS information for a subdomain
+display_info() {
+    domain=$1
+    subdomain=$2
+    dig_output=$(dig $subdomain.$domain | awk '/ANSWER SECTION/ {getline; print}')
+    record_type=$(echo "$dig_output" | awk '{print $4}')
+    destination=$(echo "$dig_output" | awk '{print $5}')
+    echo "The subdomain $subdomain is a $record_type record and points to $destination"
+}
+
+# Main script starts here
+domain="$1"
+
+# If only domain is provided
+if [ $# -eq 1 ]; then
+    display_info "$domain" "www"
+    display_info "$domain" "lb-01"
+    display_info "$domain" "web-01"
+    display_info "$domain" "web-02"
+# If both domain and subdomain are provided
+elif [ $# -eq 2 ]; then
+    subdomain="$2"
+    display_info "$domain" "$subdomain"
+else
+    echo "Usage: $0 domain [subdomain]"
+    exit 1
+fi
