@@ -1,5 +1,26 @@
 #!/usr/bin/env bash
-# Change Nginx server to listen on port 80 and restart
+# Script for automating correction of configuration issues
 
-sed -i "s/8080/80/g" /etc/nginx/sites-enabled/default
-service nginx restart
+# Check if nginx is installed
+if ! command -v nginx &> /dev/null; then
+    echo "Error: Nginx is not installed. Please install Nginx before running this script."
+    exit 1
+fi
+
+# Check if the default configuration file exists
+if [ ! -f /etc/nginx/sites-available/default ]; then
+    echo "Error: Nginx default configuration file not found."
+    exit 1
+fi
+
+# Check if the symbolic link already exists
+if [ -L /etc/nginx/sites-enabled/default ]; then
+    echo "Info: Symbolic link already exists. Removing the existing link..."
+    sudo rm /etc/nginx/sites-enabled/default
+fi
+
+# Create symbolic link to ensure proper Nginx configuration
+sudo ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+# Restart Nginx service to apply the changes
+sudo service nginx restart
