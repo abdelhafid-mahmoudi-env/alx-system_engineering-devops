@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
-# Fixing issues in a container
 
-# Copy the default Nginx configuration to the enabled sites directory
+# Correction des problèmes dans un conteneur
 cp -f /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-# Restart the Nginx service to apply the changes
 service nginx restart
-
-# Write the process ID of the new Nginx process to /run/nginx.pid
 echo '9791' | sudo tee /run/nginx.pid
