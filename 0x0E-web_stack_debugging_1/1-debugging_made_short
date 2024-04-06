@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-# Correction des problèmes dans un conteneur
+# Fixing issues in a container
 cp -f /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 service nginx restart
 echo '9791' | sudo tee /run/nginx.pid
