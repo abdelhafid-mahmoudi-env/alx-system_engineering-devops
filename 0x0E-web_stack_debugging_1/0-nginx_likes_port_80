@@ -1,25 +1,10 @@
 #!/usr/bin/env bash
 # Script for automating correction of configuration issues
 
-# Check if nginx is installed
-if ! command -v nginx &> /dev/null; then
-    echo "Error: Nginx is not installed. Please install Nginx before running this script."
-    exit 1
-fi
+# Remove existing symbolic link to prevent duplicate configurations
+sudo rm /etc/nginx/sites-enabled/default
 
-# Check if the default configuration file exists
-if [ ! -f /etc/nginx/sites-available/default ]; then
-    echo "Error: Nginx default configuration file not found."
-    exit 1
-fi
-
-# Check if the symbolic link already exists
-if [ -L /etc/nginx/sites-enabled/default ]; then
-    echo "Info: Symbolic link already exists. Removing the existing link..."
-    sudo rm /etc/nginx/sites-enabled/default
-fi
-
-# Create symbolic link to ensure proper Nginx configuration
+# Recreate symbolic link to ensure proper Nginx configuration
 sudo ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
 
 # Restart Nginx service to apply the changes
