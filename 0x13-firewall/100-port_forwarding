@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Add port forwarding rule to UFW configuration file
+echo "*nat" | sudo tee -a /etc/ufw/before.rules
+echo ":PREROUTING ACCEPT [0:0]" | sudo tee -a /etc/ufw/before.rules
+echo "-A PREROUTING -p tcp --dport 8080 -j REDIRECT --to-port 80" | sudo tee -a /etc/ufw/before.rules
+echo "COMMIT" | sudo tee -a /etc/ufw/before.rules
+
+# Reload UFW to apply changes
+sudo ufw reload
