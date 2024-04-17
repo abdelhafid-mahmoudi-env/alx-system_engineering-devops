@@ -7,5 +7,6 @@ server-id       = 2
 log_bin         = /var/log/mysql/mysql-bin.log
 relay_log       = /var/log/mysql/mysql-relay-bin
 binlog_do_db    = tyrell_corp
-bind-address    = 0.0.0.0
+# bind-address    = 0.0.0.0
 symbolic-links  = 0
+read_only               = 1
