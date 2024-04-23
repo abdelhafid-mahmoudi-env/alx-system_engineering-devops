@@ -19,7 +19,10 @@ if __name__ == "__main__":
         username = user.get("username")
 
         # Retrieve todos for the user
-        todos_data = requests.get(base_url + "todos", params={"userId": user_id}).json()
+        todos_url = base_url + "todos"
+        todos_params = {"userId": user_id}
+        todos_response = requests.get(todos_url, params=todos_params)
+        todos_data = todos_response.json()
 
         # List to store todos of the current user
         user_todos = []
