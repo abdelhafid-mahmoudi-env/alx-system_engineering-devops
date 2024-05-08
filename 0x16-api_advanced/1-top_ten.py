@@ -1,21 +1,24 @@
 #!/usr/bin/python3
-"""1-top_ten"""
-
+"""defines a function for getting number of subscribers in a subreddit"""
 import requests
 
 
 def top_ten(subreddit):
-    """Prints the titles of the first 10 hot posts for a given."""
-    req = requests.get(
-        "https://www.reddit.com/r/{}/hot.json".format(subreddit),
-        headers={"User-Agent": "Custom"},
-        params={"limit": 10},
-    )
-
-    if req.status_code == 200:
-        for get_data in req.json().get("data").get("children"):
-            dat = get_data.get("data")
-            title = dat.get("title")
-            print(title)
-    else:
+    """returns the number of subscribers for given subreddit
+    args:
+        subreddit: name of the subreddit
+    Returns:
+        number of subscribers
+    """
+    try:
+        headers = {'User-Agent':
+                   'Python:SubredditHotPosts:v1.2.3'}
+        url = "https://www.reddit.com/r/{}/hot.json?limit=9".format(subreddit)
+        response = requests.get(url, headers=headers, allow_redirects=False)
+        if response.status_code != 200:
+            print(None)
+            return
+        [print(c['data']['title']) for c in
+         response.json()['data']['children']]
+    except Exception:
         print(None)
