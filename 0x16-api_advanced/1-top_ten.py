@@ -1,25 +1,21 @@
 #!/usr/bin/python3
-"""
-1-top_ten
-"""
+"""1-top_ten"""
+
 import requests
 
 
 def top_ten(subreddit):
-    """
-    Prints the titles of the first 10 hot posts for a given subreddit
-    """
-    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
-    headers = {"User-Agent": "reddit-{}".format(subreddit)}
+    """Prints the titles of the first 10 hot posts for a given."""
+    req = requests.get(
+        "https://www.reddit.com/r/{}/hot.json".format(subreddit),
+        headers={"User-Agent": "Custom"},
+        params={"limit": 10},
+    )
 
-    response = requests.get(url, headers=headers, allow_redirects=False)
-
-    if response.status_code == 200:
-        data = response.json().get("data")
-        if data and data.get("children"):
-            for post in data.get("children"):
-                print(post.get("data").get("title"))
-        else:
-            print("None")
+    if req.status_code == 200:
+        for get_data in req.json().get("data").get("children"):
+            dat = get_data.get("data")
+            title = dat.get("title")
+            print(title)
     else:
-        print("None")
+        print(None)
