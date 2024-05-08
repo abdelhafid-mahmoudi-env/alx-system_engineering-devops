@@ -22,10 +22,12 @@ def number_of_subscribers(subreddit):
 
     headers = {
         'User-Agent': u_agent,
+        'Content-Type': 'application/x-json',
+        'Accept': 'application/x-json'
     }
 
     # Construct URL for the API endpoint
-    url = f"https://www.reddit.com/r/{subreddit}/about.json"
+    url = f"https://api.reddit.com/r/{subreddit}/about.json?keyphrase=witcher"
     res = requests.get(url, headers=headers, allow_redirects=False)
 
     # Check if the request was successful
