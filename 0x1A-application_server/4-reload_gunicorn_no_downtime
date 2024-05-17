@@ -1,3 +1,16 @@
 #!/usr/bin/env bash
-# kill all gracefully
-systemctl status gunicorn | grep -oE 'Main PID: [0-9]+' | cut -d ' ' -f3 | xargs kill -HUP
+
+# Get the path to the Gunicorn executable
+GUNICORN_BIN=$(which gunicorn)
+
+# Check if Gunicorn is installed
+if [ -z "$GUNICORN_BIN" ]; then
+    echo "Gunicorn is not installed or not found in the PATH."
+    exit 1
+fi
+
+# Gracefully reload Gunicorn by sending a HUP signal to the master process
+echo "Reloading Gunicorn..."
+sudo pkill -HUP -f "$GUNICORN_BIN"
+
+echo "Gunicorn reloaded successfully."
