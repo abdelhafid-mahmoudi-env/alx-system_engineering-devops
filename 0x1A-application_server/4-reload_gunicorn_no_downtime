@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 # Gracefully reloads Gunicorn
 
-sudo pid=$(systemctl show -p MainPID --value gunicorn)
-sudo kill -HUP "$pid"
+pid=$(systemctl show -p MainPID --value gunicorn)
+kill -HUP "$pid"
