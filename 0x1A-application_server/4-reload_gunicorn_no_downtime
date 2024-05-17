@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Sends a graceful reload signal to Gunicorn
+# Gracefully reloads gunicorn
 
-pid=$(systemctl show -p MainPID --value gunicorn)
-kill -HUP "$pid"
+sudo kill -HUP "$(ps -C gunicorn ch -o pid | head -n 1)"
