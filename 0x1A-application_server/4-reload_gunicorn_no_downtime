@@ -1,16 +1,10 @@
 #!/usr/bin/env bash
 
-# Get the path to the Gunicorn executable
-GUNICORN_BIN=$(which gunicorn)
+# Find the path to the Gunicorn executable
+GUNICORN_BIN=$(command -v gunicorn)
 
 # Check if Gunicorn is installed
-if [ -z "$GUNICORN_BIN" ]; then
-    echo "Gunicorn is not installed or not found in the PATH."
-    exit 1
-fi
+[[ -z "$GUNICORN_BIN" ]] && { echo "Error: Gunicorn is not installed or not found in the PATH."; exit 1; }
 
 # Gracefully reload Gunicorn by sending a HUP signal to the master process
-echo "Reloading Gunicorn..."
-systemctl status gunicorn | grep -oE 'Main PID: [0-9]+' | cut -d ' ' -f3 | xargs kill -HUP
-
-echo "Gunicorn reloaded successfully."
+systemctl reload gunicorn.service && echo "Gunicorn reloaded successfully." || { echo "Error: Failed to reload Gunicorn."; exit 1; }
