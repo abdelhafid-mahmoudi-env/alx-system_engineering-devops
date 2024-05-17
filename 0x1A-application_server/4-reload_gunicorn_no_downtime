@@ -1,54 +1,14 @@
-#!/usr/bin/env bash
-##########################################################
-# Script: gunicorn_reload.sh
-# Description: Sends a graceful reload signal to Gunicorn
-# Author: [Your Name]
-##########################################################
+#!/bin/bash
 
-# Set log file path
-LOG_FILE="/var/log/gunicorn_reload.log"
+# Check if Gunicorn process is running
+if pgrep -x "gunicorn" > /dev/null; then
+    # Get the PID of Gunicorn process
+    pid=$(pgrep -x "gunicorn")
 
-# Function to log messages
-log() {
-    local msg="$1"
-    echo "$(date +'%Y-%m-%d %H:%M:%S') - $msg" >> "$LOG_FILE"
-}
+    # Reload Gunicorn gracefully
+    kill -HUP $pid
 
-# Check if script is executed with sudo
-if [[ $EUID -ne 0 ]]; then
-    echo "This script must be run as root or with sudo."
-    exit 1
-fi
-
-# Check if Gunicorn service is running
-if ! systemctl is-active --quiet gunicorn; then
-    echo "Gunicorn service is not running."
-    exit 1
-fi
-
-# Get the main PID of Gunicorn
-pid=$(systemctl show -p MainPID --value gunicorn)
-
-# Validate if PID is empty or not
-if [[ -z $pid ]]; then
-    log "Failed to retrieve Gunicorn's main PID. Ensure Gunicorn service is running."
-    exit 1
-fi
-
-# Validate if the PID is a numeric value
-if ! [[ $pid =~ ^[0-9]+$ ]]; then
-    log "Invalid PID found for Gunicorn (PID: $pid)."
-    exit 1
-fi
-
-# Send a graceful reload signal
-if sudo kill -HUP "$pid"; then
-    echo "Graceful reload signal sent to Gunicorn (PID: $pid)"
-    log "Graceful reload signal sent to Gunicorn (PID: $pid)"
+    echo "Gunicorn reloaded gracefully."
 else
-    echo "Failed to send reload signal to Gunicorn (PID: $pid)"
-    log "Failed to send reload signal to Gunicorn (PID: $pid)"
-    exit 1
+    echo "Gunicorn is not running."
 fi
-
-exit 0
