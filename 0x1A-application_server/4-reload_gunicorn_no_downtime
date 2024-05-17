@@ -1,13 +1,34 @@
 #!/usr/bin/env bash
 # Sends a graceful reload signal to Gunicorn
 
+# Define log file path
+log_file="/var/log/gunicorn_reload.log"
+
+# Function to log messages
+log() {
+    local msg="$1"
+    echo "$(date +'%Y-%m-%d %H:%M:%S') - $msg" >> "$log_file"
+}
+
+# Check if script is executed with sudo
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root or with sudo."
+    exit 1
+fi
+
 # Get the main PID of Gunicorn
 pid=$(systemctl show -p MainPID --value gunicorn)
 
+# Check if PID is empty
+if [[ -z $pid ]]; then
+    log "Failed to retrieve Gunicorn's main PID. Ensure Gunicorn service is running."
+    exit 1
+fi
+
 # Send a graceful reload signal
-if [[ -n $pid ]]; then
-    sudo kill -HUP "$pid"
-    echo "Graceful reload signal sent to Gunicorn (PID: $pid)"
+if sudo kill -HUP "$pid"; then
+    log "Graceful reload signal sent to Gunicorn (PID: $pid)"
 else
-    echo "Failed to retrieve Gunicorn's main PID. Ensure Gunicorn service is running."
+    log "Failed to send reload signal to Gunicorn (PID: $pid)"
+    exit 1
 fi
