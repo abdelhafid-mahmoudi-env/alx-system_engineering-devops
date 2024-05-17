@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# Script to reload Gunicorn configurations and restart workers
-# without killing master processes
-pkill -HUP gunicorn
+# Sends a graceful reload signal to Gunicorn
+pid=$(systemctl show -p MainPID --value gunicorn)
+kill -HUP "$pid"
