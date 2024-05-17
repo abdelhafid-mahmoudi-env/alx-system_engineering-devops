@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
-# Gracefully reloads Gunicorn
+# Sends a graceful reload signal to Gunicorn
 
+# Get the main PID of Gunicorn
 pid=$(systemctl show -p MainPID --value gunicorn)
-kill -HUP "$pid"
+
+# Send a graceful reload signal
+if [[ -n $pid ]]; then
+    sudo kill -HUP "$pid"
+    echo "Graceful reload signal sent to Gunicorn (PID: $pid)"
+else
+    echo "Failed to retrieve Gunicorn's main PID. Ensure Gunicorn service is running."
+fi
