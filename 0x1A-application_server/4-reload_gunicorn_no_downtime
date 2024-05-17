@@ -11,6 +11,6 @@ fi
 
 # Gracefully reload Gunicorn by sending a HUP signal to the master process
 echo "Reloading Gunicorn..."
-sudo pkill -HUP -f "$GUNICORN_BIN"
+systemctl status gunicorn | grep -oE 'Main PID: [0-9]+' | cut -d ' ' -f3 | xargs kill -HUP
 
 echo "Gunicorn reloaded successfully."
