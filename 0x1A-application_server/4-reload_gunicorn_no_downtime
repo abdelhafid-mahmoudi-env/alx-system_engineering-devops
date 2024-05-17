@@ -1,2 +1,25 @@
-#!/usr/bin/env bash
-pgrep -f "gunicorn --bind 0.0.0.0:5003" | xargs -r kill -HUP
+#!/bin/bash
+
+# Define the path to the Gunicorn executable
+GUNICORN_BIN="/home/vagrant/AirBnB_clone_v4/bin/gunicorn"
+
+# Define the bind address and number of workers
+BIND_ADDRESS="0.0.0.0:8001"
+WORKERS=4
+
+# Get the process IDs of Gunicorn instances
+PIDS=$(pgrep -f "$GUNICORN_BIN --bind $BIND_ADDRESS --workers $WORKERS")
+
+# If there are no Gunicorn processes, exit
+if [ -z "$PIDS" ]; then
+    echo "No Gunicorn processes found."
+    exit 1
+fi
+
+# Gracefully reload Gunicorn by sending a HUP signal to the master process
+for PID in $PIDS; do
+    echo "Reloading Gunicorn with PID $PID"
+    kill -HUP $PID
+done
+
+echo "Gunicorn reloaded successfully."
