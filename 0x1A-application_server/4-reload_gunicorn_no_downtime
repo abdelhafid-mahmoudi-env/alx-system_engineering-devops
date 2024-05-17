@@ -1,13 +1,4 @@
 #!/usr/bin/env bash
 
 # Get the process ID of the Gunicorn master
-MASTER_PID=$(pgrep -f 'gunicorn.*--workers')
-
-# Gracefully restart Gunicorn master
-if [[ -n $MASTER_PID ]]; then
-    echo "Reloading Gunicorn without downtime..."
-    kill -s HUP $MASTER_PID
-    echo "Gunicorn reloaded successfully."
-else
-    echo "Error: Gunicorn master process not found."
-fi
+ps aux | grep gunicorn | awk '{ print $2 }' | xargs kill -HUP
